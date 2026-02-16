@@ -5,7 +5,7 @@ This repository supports the iterative tasks in AIxD study. To complete the stud
 
 ## 0. Setup before study date
 
-Before starting, ensure you have the requirements (Python, VS Code, GitHub account, GitHub Copilot Pro access, Copilot Interaction Archiver, cloned repo) following the steps in **[SETUP.md](SETUP.md)**.
+Before starting, ensure you have the requirements (Python, VS Code, GitHub account, GitHub Copilot Pro access, Copilot Interaction Archiver, cloned repo) following the steps in **[SETUP.md](SETUP.md)**, and familiarize with the examples in **[DEMO.md](DEMO.md)**.
 
 ## 1. Instructions for the study
 
@@ -22,25 +22,22 @@ Before starting, ensure you have the requirements (Python, VS Code, GitHub accou
 ### 3. Task guidelines
 
 - **One-off task**: Use the textbox on the Task Distribution System to enter your prompt directly.
-- **Iterative task**: Follow Task Distribution System's instructions and use Copilot to develop iteratively in VS Code. See [SETUP.md: Test run the extensions and Copilot](SETUP.md#test-run-the-extensions-and-copilot).
-    1. Open the corresponding task folder as your workspace in VS Code.
-        - e.g., if you are assigned with TicTacToe (Iterative), select the `AIxD_study_instruction/tictactoe` folder to [open as your workspace](https://code.visualstudio.com/docs/getstarted/getting-started#_open-a-folder-in-vs-code) in VS Code
-        - Click `Yes` to Enable Copilot Interaction Archiver for this workspace.
-    2. Open [GitHub Copilot Chat](https://learn.microsoft.com/en-us/visualstudio/ide/visual-studio-github-copilot-chat?view=visualstudio#ask-questions-in-the-chat-window) coding agent by selecting `View` > `GitHub Copilot Chat` or clicking the Copilot icon inside VS Code.
-        - Prompt Copilot to complete the task, your prompts will be automaticaly logged.
-    3. When you finish the implementation, **take a snapshot of your workspace** by clicking the "Archiver: {yourid}" button at the bottom right corner of VS Code and then click `Capture Repo Snapshot` 
-
-- **Iterative Chatbot tasks**: The repo includes starter code for a chatbot used for the **Outline Assistant** and **TripAdvisor** tasks. See [SETUP.md: Test run the chatbot](SETUP.md#test-run-the-chatbot).
-    - Inside `AIxD_study_instruction/chatbot/.env`, paste in the researcher-provided OPENAI API key. 
-    - Open the corresponding task folder as your workspace in VS Code, e.g., `AIxD_study_instruction/outlineassistant`, depending on your task assignment.
-    - Open a terminal in your VSCode workspace and launch the chatbot
+- **Iterative task**: Follow Task Distribution System's instructions and use Copilot to develop iteratively in VS Code. See [DEMO.md: General Task Steps](DEMO.md#general-task-steps), [Game Task Demo](DEMO.md#game-task-demo) (**TicTacToe** and **Connect4**), and [Chatbot Task Demo](DEMO.md#chatbot-task-demo) (**Outline Assistant** and **TripAdvisor**).
+    1. Open the corresponding task folder [as your workspace](https://code.visualstudio.com/docs/getstarted/getting-started#_open-a-folder-in-vs-code) in VS Code and select Yes to enable Copilot Interaction Archiver.
+    2. Open [GitHub Copilot Chat](https://learn.microsoft.com/en-us/visualstudio/ide/visual-studio-github-copilot-chat?view=visualstudio#ask-questions-in-the-chat-window) and prompt Copilot to complete the task, your prompts will be automaticaly logged.
+    3. For game task (detailed example in [Game Task Demo](DEMO.md#game-task-demo)), if games are implemented using python, you may run the game e.g., from the tictactoe folder's terminal, enter 
+        ```bash
+        python tictactoe.py
+        ```
+        For chatbot task (detailed example in [Chatbot Task Demo](DEMO.md#chatbot-task-demo)), launch the chatbot e.g., from the tripadvisor folder's terminal 
         ```bash
         python ../chatbot/chatbot.py
-        ```
-    - Open a browser window at http://127.0.0.1:5000. Or press `Cmd+Shift+P` (Mac) or `Ctrl+Shift+P` (Windows) to open the Command Palette; type and run: `Simple Browser: Show` to paste the url. 
-    - Choose the chatbot according to your task assignment. E.g., the Outline Assistant chatbot uses the system prompt from `outlineassistant/prompt.md`.
-    - Open [GitHub Copilot Chat](https://learn.microsoft.com/en-us/visualstudio/ide/visual-studio-github-copilot-chat?view=visualstudio#ask-questions-in-the-chat-window) coding agent by selecting `View` > `GitHub Copilot Chat` or clicking the Copilot icon inside VS Code.
-    - Interact with Copilot to build your chatbot prompt in the corresponding `prompt.md`. Save the file and view your prompt's effect using the chatbot.
+        ``` 
+        Edit and save the corresponding `prompt.md` and test your prompt's effect using the chatbot via Simple Browser window at http://127.0.0.1:5000.
+
+
+    4. When you finish the implementation, take a snapshot of your workspace
+
     
 
 

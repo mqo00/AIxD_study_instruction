@@ -43,64 +43,24 @@ Ensure [GitHub Copilot](https://marketplace.visualstudio.com/items?itemName=GitH
 - If you see “GitHub Copilot Chat must be in Debug mode”, click `Cancel`
 
 
-
-### Test run the extensions and Copilot:
-
- - Select the `AIxD_study_instruction/prep` folder to [open as your workspace](https://code.visualstudio.com/docs/getstarted/getting-started#_open-a-folder-in-vs-code) in VS Code
- - Click `Yes` to Enable Copilot Interaction Archiver for this workspace.
- - Open [GitHub Copilot Chat](https://learn.microsoft.com/en-us/visualstudio/ide/visual-studio-github-copilot-chat?view=visualstudio#ask-questions-in-the-chat-window) coding agent by selecting `View` > `GitHub Copilot Chat` or clicking the Copilot icon inside VS Code.
- - Enter a prompt to make sure the coding agent works by implementing a helloworld app in `prep/helloworld.py`. E.g., prompt "make a hello world app", and ask Copilot for how to view the app.
- - When you finish the implementation, take a snapshot of your workspace in VS Code by clicking "Archiver: {yourid}" button (bottom right corner) and "Capture Repo Snapshot" 
-    - Or, press `Cmd+Shift+P` (Mac) or `Ctrl+Shift+P` (Windows) to open the Command Palette. Type and run: `Copilot Archiver: Capture Now`.
-
-
-On the actual study date, the procedural will be similar (you will open the corresponding task folders, e.g., `AIxD_study_instruction/tictactoe` when instructed).
-
-
-
 ## 4. Configure the chatbot for iterative chatbot tasks
 
 **Create your `.env` file**
-   - Rename `chatbot/.env.example` to `chatbot/.env`.
-   - Open `chatbot/.env` in a text editor and set your OpenAI API key (enter your own key first, the researcher will provide a new key on the study date):
+   - Copy `chatbot/.env.example` to `chatbot/.env` (or rename).
+   - Open `chatbot/.env` and set your LiteLLM API key (researcher will provide a key on the study date):
 
    ```
-   OPENAI_API_KEY=your-openai-api-key-here
+   LITELLM_API_KEY=your-litellm-api-key-here
    ```
-
-### Test run the chatbot
-
-- Select the `AIxD_study_instruction/outlineassistant` folder to [open as your workspace](https://code.visualstudio.com/docs/getstarted/getting-started#_open-a-folder-in-vs-code) in VS Code.
-
-- Open the [terminal](https://code.visualstudio.com/docs/terminal/getting-started#_run-your-first-command-in-the-terminal) inside VSCode by selecting `View` > `Terminal` from the menu bar, or by pressing the ⌃` keyboard shortcut, or by dragging a terminal window up from the botton of VSCode interface.
-    
-- Inside the terminal of the outlineassistant folder, enter
-    ```bash
-    cd ../chatbot
-    python -m pip install -r requirements.txt && python chatbot.py
-    ```
-    After the initial pip installation, you may also directly enter `python ../chatbot/chatbot.py`
-
-- Follow link (cmd + click) to open the chatbot in browser window at http://127.0.0.1:5000.
-    Or 
-    - Open the Command Palette: Press Ctrl+Shift+P (Windows/Linux) or Cmd+Shift+P (macOS).
-    - Run the Command: Type "Simple Browser" and select `Simple Browser: Show` from the list.
-    - Enter a URL: An input box will appear, enter http://127.0.0.1:5000
-    - Press Enter: The webpage will open in a new editor tab within VS Code.
-    
-- Modify the `prompt.md` in the corresponding folder to test the chatbot. Note that an API key will be needed (will be provided on the study date). For example, 
-    - Enter "Respond 'hello world' when I say hi" inside `outlineassistant/prompt.md`, save it using `Cmd+S` (Mac) or `Ctrl+S` (Windows)
-    - Enter "hi" for the chatbot Outline Assistant in browser, notice how it should say "hello world" back
-    - The Trip Advisor doesn't repond like that (since it's build from the source prompt in `tripadvisor/prompt.md`).
-
-On the actual study date, you can test your chatbot prompt in a similar procedure.
-
 
 ---
 
 ## Troubleshooting
 
-**Contact us**: If you run into any issues, contact us (Christina Ma & Keyu He) via your course communication channel or email. See FAQs [here](https://docs.google.com/document/d/1---Zywg3Kzaiq-BiOPXJfuX83NEfevb3BPS7leVGaco/edit?usp=sharing).
+**Contact us**: If you run into any issues, contact Christina Ma via your course communication channel or email. See FAQs [here](https://docs.google.com/document/d/1---Zywg3Kzaiq-BiOPXJfuX83NEfevb3BPS7leVGaco/edit?usp=sharing).
 
-- **"Please add your OpenAI API key"**: Ensure `chatbot/.env` exists and contains a valid `OPENAI_API_KEY`.
-- **Port already in use**: Another process may be using port 5000; stop it or change the port in `chatbot.py`.
+- **"Please set LITELLM_API_KEY"**: Ensure `chatbot/.env` exists and contains a valid `LITELLM_API_KEY`.
+- **Port already in use**: Another process may be using port 5000;
+    - Ctrl+C in running process to quit,
+    - kill it (check the pid by `lsof -i :5000` then `kill <pid>`), or
+    - change the port in `chatbot.py`.

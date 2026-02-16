@@ -1,28 +1,32 @@
 #!/usr/bin/env python3
 """
-Simple chatbot with Outline Assistant or TripAdvisor modes.
+Simple chatbot with Outline Assistant, TripAdvisor, or Proof Reader modes.
 Run: pip install -r requirements.txt && python chatbot.py
 """
 
 import os
 from pathlib import Path
 
+import litellm
 from dotenv import load_dotenv
 from flask import Flask, jsonify, request
-from openai import OpenAI
 
 # Load API key from .env
 load_dotenv()
+LITELLM_API_BASE = "https://ai-gateway.andrew.cmu.edu/"
+LITELLM_MODEL = "openai/wine-gemini-2.5-flash"
 
 # Resolve paths relative to project root (parent of chatbot/)
 SCRIPT_DIR = Path(__file__).resolve().parent
 PROJECT_ROOT = SCRIPT_DIR.parent
-OUTLINE_PROMPT_PATH = PROJECT_ROOT / "outlineassistant" / "prompt.md"
-TRIPADVISOR_PROMPT_PATH = PROJECT_ROOT / "tripadvisor" / "prompt.md"
+OUTLINE_PROMPT_PATH = PROJECT_ROOT / "outlineassistant" / "outlineassistant_prompt.md"
+TRIPADVISOR_PROMPT_PATH = PROJECT_ROOT / "tripadvisor" / "tripadvisor_prompt.md"
+PROOFREADER_PROMPT_PATH = PROJECT_ROOT / "proofreader" / "proofreader_prompt.md"
 
 MODE_PROMPTS = {
     "Outline Assistant": OUTLINE_PROMPT_PATH,
     "TripAdvisor": TRIPADVISOR_PROMPT_PATH,
+    "Proof Reader": PROOFREADER_PROMPT_PATH,
 }
 
 app = Flask(__name__)
@@ -48,22 +52,22 @@ def chat():
     history = data.get("history", [])
     mode = data.get("mode", "Outline Assistant")
 
-    api_key = os.getenv("OPENAI_API_KEY")
-    if not api_key or api_key == "enter-your-openai-api-key-here":
-        return jsonify({"error": "Please add your OpenAI API key to chatbot/.env (copy from .env.example)."}), 400
+    api_key = os.getenv("LITELLM_API_KEY")
+    if not api_key or api_key == "enter-your-litellm-api-key-here":
+        return jsonify({"error": "Please set LITELLM_API_KEY in chatbot/.env (see .env.example)."}), 400
 
     system_prompt = load_system_prompt(mode)
-
-    client = OpenAI(api_key=api_key)
-
+    print(f"System prompt: {system_prompt}")
     messages = [{"role": "system", "content": system_prompt or "You are a helpful assistant."}]
     for msg in history:
         messages.append({"role": msg["role"], "content": msg["content"]})
     messages.append({"role": "user", "content": message})
 
     try:
-        response = client.chat.completions.create(
-            model="gpt-4o-mini",
+        response = litellm.completion(
+            api_key=api_key,
+            api_base=LITELLM_API_BASE,
+            model=LITELLM_MODEL,
             messages=messages,
         )
         content = response.choices[0].message.content or ""
@@ -132,6 +136,7 @@ HTML = """<!DOCTYPE html>
     <div class="mode-buttons">
       <button data-mode="Outline Assistant" class="active">Outline Assistant</button>
       <button data-mode="TripAdvisor">TripAdvisor</button>
+      <button data-mode="Proof Reader">Proof Reader</button>
     </div>
     <button id="newChat">+ New chat</button>
     <h2>Chats</h2>
