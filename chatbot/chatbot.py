@@ -4,7 +4,9 @@ Simple chatbot with Outline Assistant, TripAdvisor, or Proof Reader modes.
 Run: pip install -r requirements.txt && python chatbot.py
 """
 
+import json
 import os
+from datetime import datetime, timezone
 from pathlib import Path
 
 import litellm
@@ -40,6 +42,85 @@ def load_system_prompt(mode: str) -> str:
     return ""
 
 
+def get_prompt_history_path(mode: str) -> Path:
+    """Return path to prompt_history.json in the task folder for this mode."""
+    path = MODE_PROMPTS.get(mode, OUTLINE_PROMPT_PATH)
+    task_folder = path.parent
+    return task_folder / "prompt_history.json"
+
+
+def _response_metadata(response) -> dict:
+    """Extract JSON-serializable metadata from litellm completion response."""
+    meta = {}
+    try:
+        meta["model"] = getattr(response, "model", None)
+    except Exception:
+        meta["model"] = None
+    try:
+        u = getattr(response, "usage", None)
+        if u is not None:
+            meta["usage"] = {
+                "prompt_tokens": getattr(u, "prompt_tokens", None),
+                "completion_tokens": getattr(u, "completion_tokens", None),
+                "total_tokens": getattr(u, "total_tokens", None),
+            }
+        else:
+            meta["usage"] = None
+    except Exception:
+        meta["usage"] = None
+    try:
+        if response.choices:
+            c = response.choices[0]
+            meta["finish_reason"] = getattr(c, "finish_reason", None)
+            meta["index"] = getattr(c, "index", None)
+        else:
+            meta["finish_reason"] = None
+            meta["index"] = None
+    except Exception:
+        meta["finish_reason"] = None
+        meta["index"] = None
+    try:
+        meta["response_ms"] = getattr(response, "response_ms", None)
+    except Exception:
+        meta["response_ms"] = None
+    return meta
+
+
+def append_to_prompt_history(
+    mode: str,
+    system_prompt: str,
+    messages: list,
+    user_message: str,
+    assistant_content: str,
+    response_metadata: dict,
+) -> None:
+    """Append full API call (system prompt, messages, response + metadata) to prompt_history.json."""
+    path = get_prompt_history_path(mode)
+    path.parent.mkdir(parents=True, exist_ok=True)
+    if path.exists():
+        try:
+            with open(path, "r", encoding="utf-8") as f:
+                history = json.load(f)
+        except (json.JSONDecodeError, OSError):
+            history = []
+    else:
+        history = []
+    history.append({
+        "timestamp": datetime.now(timezone.utc).isoformat(),
+        "request": {
+            "system_prompt": system_prompt,
+            "messages": messages,
+            "user_message": user_message,
+        },
+        "response": {
+            "content": assistant_content,
+            "metadata": response_metadata,
+        },
+    })
+    with open(path, "w", encoding="utf-8") as f:
+        json.dump(history, f, indent=2, ensure_ascii=False)
+
+
 @app.route("/")
 def index():
     return HTML
@@ -71,6 +152,15 @@ def chat():
             messages=messages,
         )
         content = response.choices[0].message.content or ""
+        response_metadata = _response_metadata(response)
+        append_to_prompt_history(
+            mode=mode,
+            system_prompt=system_prompt,
+            messages=messages,
+            user_message=message,
+            assistant_content=content,
+            response_metadata=response_metadata,
+        )
         return jsonify({"content": content})
     except Exception as e:
         return jsonify({"error": str(e)}), 500
